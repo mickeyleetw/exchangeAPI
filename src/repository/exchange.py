@@ -1,7 +1,7 @@
 from decimal import Decimal
 from files.exchange_rate import exchange_rate
 
-from apps.exchange.model import ExChangeResultModel
+from models.exchange import ExChangeResultModel
 
 
 class ExchangeRepo:
@@ -20,8 +20,8 @@ class ExchangeRepo:
 
     @staticmethod
     def convert_currency(source:str, target:str, amount:Decimal ):
-        rate = exchange_rate['currencies'][source][target]
-        converted_amount = round(float(amount.replace(',', '')) * rate, 2)
+        rate = Decimal(exchange_rate['currencies'][source][target])
+        converted_amount = round(Decimal(amount.replace('$', '').replace(',','')) * rate, 2)
         return "{:,.2f}".format(converted_amount)
 
     @staticmethod

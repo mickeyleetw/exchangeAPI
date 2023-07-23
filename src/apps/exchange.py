@@ -3,11 +3,11 @@ from starlette import status
 from typing import Optional
 
 from core.response import default_responses, response_404,response_403
-from core.enum import CurrencyEnum
+from core.enum import CurrencyEnum,ErrorCode    
 from core.exception import ResourceNotFoundException,EmptyQueryParamsException
 from repository.exchange import ExchangeRepo
 
-from .model import ExChangeResultModel
+from models.exchange import ExChangeResultModel
 
 router = APIRouter(prefix='/exchanges', tags=['exchange'], responses=default_responses)
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix='/exchanges', tags=['exchange'], responses=default_res
     response_model=ExChangeResultModel,
     responses={
         **response_404('Source or Source and Target Currency relation'),
-        **response_403('Source or Target or Amount not found')
+        **response_403(ErrorCode.GENERAL_1003_QUERY_PARAMS_VALIDATION_FAILED,'Source or Target or Amount not found')
     },
 )
 def currency_exchange(

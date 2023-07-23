@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from apps.exchange.exchange import router
+from apps.exchange import router
 from core.exception_handler import add_exception_handlers
 from core.response import default_responses
 
