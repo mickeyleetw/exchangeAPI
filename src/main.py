@@ -4,12 +4,12 @@ from apps.exchange import router
 from core.exception_handler import add_exception_handlers
 from core.response import default_responses
 
-app = FastAPI(title='Exchange API')
+app = FastAPI(title='Exchange API',version='?')
 app.include_router(router)
 
 
 @app.get("/root", tags=["Root"], responses=default_responses)
-async def root():
+def root():
     return {'status': 0}
 
 

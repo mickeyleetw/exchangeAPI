@@ -25,13 +25,3 @@ class ResourceNotFoundException(BaseException_):
             http_status=status.HTTP_404_NOT_FOUND,
             message=f'{subject} not found'
         )
-
-
-class EmptyQueryParamsException(BaseException_):
-
-    def __init__(self, msg: str):
-        super().__init__(
-            code=ErrorCode.GENERAL_1003_QUERY_PARAMS_VALIDATION_FAILED,
-            http_status=status.HTTP_403_FORBIDDEN,
-            message=msg
-        )

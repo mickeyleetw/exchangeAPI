@@ -17,3 +17,6 @@ exchange_rate ={
         }
     }
 }
+
+def get_exchange_map():
+    return exchange_rate

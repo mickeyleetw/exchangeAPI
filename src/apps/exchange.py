@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query,Depends
 from starlette import status
 from typing import Optional
 
-from core.response import default_responses, response_404,response_403
-from core.enum import CurrencyEnum,ErrorCode    
-from core.exception import ResourceNotFoundException,EmptyQueryParamsException
-from repository.exchange import ExchangeRepo
+from core.response import default_responses, response_404
+from core.enum import CurrencyEnum    
+from core.exception import ResourceNotFoundException
+from repositories.exchange import ExchangeRepo
+from files.exchange_rate import get_exchange_map
 
 from models.exchange import ExChangeResultModel
 
@@ -17,20 +18,18 @@ router = APIRouter(prefix='/exchanges', tags=['exchange'], responses=default_res
     status_code=status.HTTP_200_OK,
     response_model=ExChangeResultModel,
     responses={
-        **response_404('Source or Source and Target Currency relation'),
-        **response_403(ErrorCode.GENERAL_1003_QUERY_PARAMS_VALIDATION_FAILED,'Source or Target or Amount not found')
+        **response_404('Source or Source and Target Currency relation')
     },
 )
-def currency_exchange(
+async def currency_exchange(
     source: Optional[CurrencyEnum],
     target: Optional[CurrencyEnum],
     amount: Optional[str] = Query(..., regex=r"^\$?[\d,]+(\.\d{1,2})?$"),
+    exchange_map: dict = Depends(get_exchange_map)
 )->ExChangeResultModel :
-    if not source or not target or not amount:
-        raise EmptyQueryParamsException('Source or Target or Amount not found')
-    if not ExchangeRepo.is_source_valid(source):
+    if not ExchangeRepo.is_source_valid(source_currency=source,exchange_map=exchange_map):
         raise ResourceNotFoundException('Source Currency')
-    if not ExchangeRepo.is_target_valid(source, target):
+    if not ExchangeRepo.is_target_valid(source_currency=source, target_currency=target,exchange_map=exchange_map):
         raise ResourceNotFoundException('Source and Target Currency relation')
-    converted_amount = ExchangeRepo.convert_currency(source, target, amount)
-    return ExchangeRepo.convert_exchange_result_to_model(message='success', amount=f'${converted_amount}')
+    converted_result = ExchangeRepo.convert_currency(source_currency=source, target_currency=target, amount=amount,exchange_map=exchange_map)
+    return ExchangeRepo.convert_exchange_result_to_model(message='success', amount=converted_result)

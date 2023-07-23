@@ -61,21 +61,3 @@ def response_404(subject: str) -> dict:
                     },
             }
     }
-
-
-def response_403(code: ErrorCode, message: str) -> dict:
-    return {
-        status.HTTP_403_FORBIDDEN:
-            {
-                'model': ErrorMessage,
-                'description': 'Forbidden',
-                'content': {
-                    'application/json': {
-                        'example': {
-                            'code': code,
-                            'message': message
-                        }
-                    }
-                }
-            }
-    }
